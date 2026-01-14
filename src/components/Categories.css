@@ -1,0 +1,10 @@
+.category {
+  width: 300px;
+  cursor: pointer;
+  transition: 150ms ease;
+}
+
+.category:hover {
+  background-color: #92bae2ff;
+  color: aliceblue;
+}

@@ -2,13 +2,13 @@ import { IconX } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { getBooksByCategory } from '../utils'
+import { getBooksByCateg } from '../utils'
 import { Box, Flex, Loader, Paper, Title } from '@mantine/core'
 import { MyCard } from './MyCard'
 
 export const BooksByCateg = () => {
   const {categId}=useParams()
-  const { isLoading, status, data, error, isError } = useQuery({ queryKey: ['booksbycateg',categId], queryFn: getBooksByCategory })
+  const { isLoading, status, data, error, isError } = useQuery({ queryKey: ['booksbycateg',categId], queryFn: getBooksByCateg})
   const xIcon = <IconX size={20} />;
 
   data && console.log(data.data);
@@ -24,9 +24,10 @@ export const BooksByCateg = () => {
                   {error.message}
               </Notification>
           }
+          {data && <Title>{data.data[0].category}</Title>}
           {data && data.data.map(obj =>
               <Box key={obj.id} >
-                  <MyCard {...obj}/>
+                  <MyCard {...obj} categ={false}/>
 
               </Box>
 

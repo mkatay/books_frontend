@@ -1,9 +1,11 @@
 import { Button, Flex, ScrollArea, Table, Modal, TextInput, Textarea } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { createBook, readBooks, updateBook } from "../utils";
+import { createBook, deleteBook, readBooks, updateBook } from "../utils";
 import { FaTrash } from "react-icons/fa";
 import { CiEdit } from "react-icons/ci";
 import { IoIosAddCircleOutline } from "react-icons/io";
+import { Alert } from '@mantine/core';
+import { IconInfoCircle } from '@tabler/icons-react';
 
 export const Dashboard = () => {
   const [books, setBooks] = useState([]);
@@ -19,31 +21,20 @@ export const Dashboard = () => {
   const handleChange = (e) => {
     setNewBook({...newBook,[e.target.name]: e.target.value});
   };
-/*const handleSave = async () => {
-  try {
-    // Kiegészítjük az új könyvet kötelező mezőkkel, ha nincs űrlap hozzájuk
-    const bookToSave = {...newBook, category_id: 1,rating: 1,cover:"borító"};
-    console.log(bookToSave);
-    
-    const savedBook = await createBook(bookToSave);
-    setBooks(current => [...current, savedBook]);
-    setShowForm(false);
-    setNewBook({ title: "", author: "", description: "" });
-  } catch (error) {
-    console.error("Hiba a könyv mentésekor:", error);
-  }
-};
-*/
+
 const handleSave = async () => {
   try {
-    const bookToSave = {...newBook,category_id: 1,  cover: "borító", rating: 1,};
+   
 
     if (editingBook) {
-      const updatedBook = await updateBook(editingBook.id, bookToSave);
+      console.log(newBook);
+      
+      const updatedBook = await updateBook(editingBook.id, newBook);
       setBooks((current) => current.map((b) => (b.id === editingBook.id ? updatedBook : b)));
     } else {
-      const savedBook = await createBook(bookToSave);
-      setBooks((current) => [...current, savedBook]);
+        const bookToSave = {...newBook,category_id: 1,  cover: "borító", rating: 1,};
+        const savedBook = await createBook(bookToSave);
+        setBooks((current) => [...current, savedBook]);
     }
 
     setShowForm(false);
@@ -57,10 +48,24 @@ const handleSave = async () => {
 
 const handleEditClick = (book) => {
   setEditingBook(book);
-  setNewBook({title: book.title,author: book.author,description: book.description});
+  setNewBook({...book,title: book.title,author: book.author,description: book.description});
   setShowForm(true);
 };
 
+  
+const icon = <IconInfoCircle />;
+
+const handleDeleteClick= async (id)=>{
+  try {
+    const response=await deleteBook(id)
+    console.log(response?.msg);
+    alert(response?.msg)
+    setBooks(prev=>prev.filter(obj=>obj.id!=id))
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
 
   const rows = books.map((obj) => (
     <Table.Tr key={obj.id}>
@@ -68,7 +73,7 @@ const handleEditClick = (book) => {
       <Table.Td>{obj.author}</Table.Td>
       <Table.Td>{obj.description}</Table.Td>
       <Table.Td>
-        <FaTrash style={{ color: "red", cursor: "pointer" }} size={20} />
+        <FaTrash style={{ color: "red", cursor: "pointer" }} size={20} onClick={()=>handleDeleteClick(obj.id)}/>
         <CiEdit size={20} style={{ color: "blue", cursor: "pointer" }} onClick={()=>handleEditClick(obj)} />
       </Table.Td>
     </Table.Tr>

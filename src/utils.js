@@ -31,3 +31,7 @@ export const updateBook = async (id, updatedData) => {
   const response = await axios.put(`${baseURL}/${id}`, updatedData);
   return response.data;
 };
+export const deleteBook=async (id)=>{
+  const response=await axios.delete(baseURL+'/'+id)
+  return response.data
+}
